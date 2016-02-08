@@ -1,0 +1,26 @@
+<h1>Listing stocks</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Product Name</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @stocks_array.each do |stock| %>
+      <tr>
+        <td><%= stock[:quantity] %></td>
+        <td><%= stock[:price] %></td>
+        <td><%= stock[:product_name] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Stock', new_stock_path %>

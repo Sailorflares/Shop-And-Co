@@ -1,0 +1,37 @@
+<div class="container">
+	<div class="row">
+		<div class="col-md-9">
+			<h1>Your Shopping Cart</h1>
+			<ul class="list-group">
+				<% @cart.items.each do |item| %>
+				  <li class="list-group-item">
+				    <span class="badge"><%= item["quantity"] %></span>
+				    <%= item["name"] %>
+
+					
+
+
+
+				<%= form_tag(add_to_cart_path, method: "post") do %>
+	          		<%= hidden_field_tag(:product_id, item["id"]) %>
+	          		<%= number_field(:quantity, nil, in: 1.0..20.0, step: 1, placeholder: item["quantity"]) %>
+	            	<%= submit_tag("Update Quantity") %>
+		        <% end %>
+
+
+
+
+
+
+
+
+
+				  </li>
+			  	<% end %>
+			</ul>
+		</div>
+	</div>
+	<div class="row">
+		<%= button_to "Checkout", :action => 'create', :controller => 'orders' %>
+	</div>
+</div>
