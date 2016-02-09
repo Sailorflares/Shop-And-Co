@@ -22,8 +22,8 @@ class ProductsController < ApplicationController
 
   def add_to_cart
     cart = Cart.new(session[:cart_items])
-    binding.pry
 
+    #right now add_item_to_cart expects params[:quantity] to be an array with one entry, a string. Should reserach more in number_field_tag about returning just the string
     cart.add_item_to_cart(params[:product_name],params[:product_id],params[:stock_price], params[:quantity])
 
     session[:cart_items] = cart.items

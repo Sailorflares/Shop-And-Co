@@ -1,5 +1,3 @@
-<h1>Listing stocks</h1>
-
 <table>
   <thead>
     <tr>
@@ -60,37 +58,72 @@
 
               <div className="container">
                 <div className="row">
-                  <NewStockQuantity />
+                  <h2>New Stock</h2>
+                </div>
+                <div className="row">
+                  <NewStock />
                 </div>
               </div>
+
+              <div className="container">
+                <div className="row">
+                  <h2>New Product</h2>
+                </div>
+                <div className="row">
+                  <NewProduct />
+                </div>
+              </div>
+
             </div>
           );
         }
       }
 
-      class NewStockQuantity extends React.Component {
+      class NewStock extends React.Component {
         render () {
           return (
             <div>
-              <form onSubmit={this.addStock}>
+              <form action="/stocks" className="new_stock" id="new_stock" method="post">
                 <div style={{display:"none"}}>
                   <input name="utf8" type="hidden" value="✓" />
                   <input name="authenticity_token" type="hidden" value="vMpbBd2yOQ5K6jzWIJ3++YLE5wlsRfo4Xaq+/OdgKe8=" />
                 </div>
                 <div className="field">
                   <label htmlFor="stock_quantity">Quantity</label><br />
-                  <input className="form-control" ref="stock_quantity" name="stock[quantity]" type="number" />
+                  <input className="form-control" id="stock_quantity" name="stock[quantity]" type="number" />
                 </div>
                 <div className="field">
                   <label htmlFor="stock_price">Price</label><br />
-                  <input className="form-control" ref="stock_price" name="stock[price]" type="text" />
+                  <input className="form-control" id="stock_price" name="stock[price]" type="text" />
                 </div>
                  <div className="field">
                   <label htmlFor="stock_product_id">Product</label><br />
-                  <input className="form-control" ref="stock_product_id" name="stock[product_id]" type="text" />
+                  <input className="form-control" id="stock_product_id" name="stock[product_id]" type="text" />
                 </div>
                 <div className="actions">
                   <input className = "btn btn-default" name="commit" type="submit" value="Create Stock" />
+                </div>
+              </form>
+            </div>
+          );
+        }
+      }
+
+      class NewProduct extends React.Component {
+        render () {
+          return (
+            <div>
+              <form action="/products" className="new_product" id="new_product" method="post">
+                <div style={{display:"none"}}>
+                  <input name="utf8" type="hidden" value="✓" />
+                  <input name="authenticity_token" type="hidden" value="vMpbBd2yOQ5K6jzWIJ3++YLE5wlsRfo4Xaq+/OdgKe8=" />
+                </div>
+                <div className="field">
+                  <label htmlFor="product_name">Name</label><br />
+                  <input className="form-control" id="product_name" name="product[name]" type="text" />
+                </div>
+                <div className="actions">
+                  <input className = "btn btn-default" name="commit" type="submit" value="Create Product" />
                 </div>
               </form>
             </div>

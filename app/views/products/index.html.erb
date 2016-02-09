@@ -29,6 +29,115 @@
   </tbody>
 </table>
 
-<br>
+    <div id="root"></div>
 
-<%= link_to 'New Product', new_product_path %>
+    <script type="text/babel">
+
+      let productz = [
+        {id: "1", price: 7.74, name: "T-Rex"},
+        {id: "2", price: 5.34, name: "Velociraptor"},
+        {id: "3", price: 1.14, name: "Rat Baby"}
+      ];
+
+      class Product extends React.Component {
+        render () {
+          return (
+            <div>
+              <a href="#" className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price}</a><CartButton />
+            </div>
+          );
+        }
+      }
+
+      class CartButton extends React.Component {
+        sendToCart(event) {
+            event.preventDefault();
+            this.props.sendToCart(this.refs.name.value, this.refs.id.value, this.refs.price.value);
+        }
+        render () {
+          return (
+            <div>
+              <form onSubmit={this.sendToCart.bind(this)}>
+                <input ref="name" name="product_name" type="hidden" value="working" />
+                <input ref="id" name="product_id" type="hidden" value="4" />
+                <input ref="price" name="stock_price" type="hidden" value="0.0" />
+                <input name="commit" type="submit" value="Add to Cart" />
+              </form>
+            </div>
+          );
+        }
+      }
+
+      var lineItemz = [
+      { id:"1", quantity: 1, name: "Tea" },
+      { id:"2", quantity: 3, name: "Coffee" },
+      { id:"3", quantity: 2, name: "Coffee" }
+      ];
+
+      class Cart extends React.Component {
+        render () {
+          let lineItems = this.props.lineItems.map(lineItem => <LineItem key={lineItem.id} {...lineItem} />);
+          return (
+            <div className="container">
+              <div className="row">
+                <div className="col-md-9">
+                  <h1>Your Shopping Cart</h1>
+                  <ul className="list-group">
+                    {lineItems}
+                  </ul>
+                </div>
+              </div>
+            </div>  
+          );
+        }
+      }
+
+      class LineItem extends React.Component {
+        render () {
+          return (
+            <div>  
+              <li className="list-group-item">
+                <span className="badge">{this.props.quantity}</span>
+                {this.props.name}
+              </li>
+            </div>
+          );
+        }
+      }
+
+      class Main extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.state = { lineItems: lineItemz };
+        }
+
+        addToCart(name, id, price) {
+          let newLineItems = this.state.lineItems;
+          newLineItems.unshift({ id: id, name: name, price: price });
+
+          this.setState({ lineItems: newListItems});
+        }
+        render () {
+          let products = this.props.products.map(productForSale => <Product key={productForSale.id} {...productForSale}/>);
+          return (
+            <div>
+              <div className="container">
+                <div className="row">
+                  <h1>Cool Stuff For Sale</h1>
+                </div>
+                <div className="row">
+                  <div className="list-group">
+                    {products}
+                  </div>
+                </div>
+              </div>
+
+              <Cart sendToCart={this.addToCart.bind(this)} lineItems={this.state.lineItems}/>
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<Main products={productz}/>, document.getElementById('root'));
+    </script>
