@@ -23,4 +23,81 @@
 
 <br>
 
-<%= link_to 'New Stock', new_stock_path %>
+
+
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+
+      let stockz = [
+        {id: "1", qty: 56, price: 7.74, name: "T-Rex"},
+        {id: "2", qty: 112, price: 5.34, name: "Velociraptor"},
+        {id: "3", qty: 65, price: 1.14, name: "Rat Baby"}
+      ];
+
+      class StockItem extends React.Component {
+        render () {
+          return <a href="#" className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} | <b>Quantity</b>: {this.props.qty}</a>;
+        }
+      }
+
+      class Main extends React.Component {
+        render () {
+          let stockItems = this.props.stockItems.map(stockItem => <StockItem key={stockItem.id} {...stockItem}/>);
+          return (
+            <div>
+              <div className="container">
+                <div className="row">
+                  <h1>Stocks</h1>
+                </div>
+                <div className="row">
+                  <div className="list-group">
+                    {stockItems}
+                  </div>
+                </div>
+              </div>
+
+              <div className="container">
+                <div className="row">
+                  <NewStockQuantity />
+                </div>
+              </div>
+            </div>
+          );
+        }
+      }
+
+      class NewStockQuantity extends React.Component {
+        render () {
+          return (
+            <div>
+              <form onSubmit={this.addStock}>
+                <div style={{display:"none"}}>
+                  <input name="utf8" type="hidden" value="✓" />
+                  <input name="authenticity_token" type="hidden" value="vMpbBd2yOQ5K6jzWIJ3++YLE5wlsRfo4Xaq+/OdgKe8=" />
+                </div>
+                <div className="field">
+                  <label htmlFor="stock_quantity">Quantity</label><br />
+                  <input className="form-control" ref="stock_quantity" name="stock[quantity]" type="number" />
+                </div>
+                <div className="field">
+                  <label htmlFor="stock_price">Price</label><br />
+                  <input className="form-control" ref="stock_price" name="stock[price]" type="text" />
+                </div>
+                 <div className="field">
+                  <label htmlFor="stock_product_id">Product</label><br />
+                  <input className="form-control" ref="stock_product_id" name="stock[product_id]" type="text" />
+                </div>
+                <div className="actions">
+                  <input className = "btn btn-default" name="commit" type="submit" value="Create Stock" />
+                </div>
+              </form>
+            </div>
+          );
+        }
+      }
+
+
+      ReactDOM.render(<Main stockItems={stockz}/>, document.getElementById('root'));
+    </script>

@@ -5,12 +5,14 @@ class Cart
 		@items = items ? items : []
 	end
 
-	def add_item_to_cart(product_name, product_id, product_price, product_quantity = 1)
+	def add_item_to_cart(product_name, product_id, product_price, product_quantity)
+		product_quantity = product_quantity ? product_quantity.first.to_i : 1
+
 		item = item_from_shopping_cart(product_id)
 		if item
-			item["quantity"] += 1
+			item["quantity"] = product_quantity
 		else
-			@items << { "quantity" => 1,
+			@items << { "quantity" => product_quantity,
 						"name" => product_name,
 						"id" => product_id,
 						"price" => product_price }

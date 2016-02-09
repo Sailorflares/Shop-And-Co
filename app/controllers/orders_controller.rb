@@ -24,6 +24,7 @@ class OrdersController < ApplicationController
   # POST /orders
   # POST /orders.json
   def create
+    binding.pry
     cart = Cart.new(session[:cart_items])
     @order = Order.create(total: cart.total)
 
