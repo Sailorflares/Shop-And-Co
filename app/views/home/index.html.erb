@@ -113,10 +113,11 @@
 
 const Products = React.createClass({
 		getInitialState () {
-			return { stockItems: [] };
+			return { stockItems: [], lineItems: [] };
 		},
 
 		componentDidMount () {
+			//because products is also hitting /stocks/index, this could be arranged to not have to make this call since stockItems componenet also calls this...
 	    this.getStocks = $.get('/stocks/index', function (result) {
 			this.setState({
 				stockItems: result
@@ -126,6 +127,13 @@ const Products = React.createClass({
 
 	  componentWillUnmount () {
 	    this.getStocks.abort();
+	  },
+
+	  addToCart (lineItem) {
+	  	console.log("You make it!");
+	  	this.setState({
+	  		lineItems: this.state.lineItems.concat(lineItem)
+	  	});
 	  },
 
 		render() {
@@ -141,16 +149,55 @@ const Products = React.createClass({
             </div>
           </div>
 
+          <Cart sendToCart={this.addToCart} lineItems={this.state.lineItems}/>
+
       	</div>
 			);
 		}
 	})
 
 	const Product = React.createClass({
+		sendToCart(e) {
+			console.log("Product = React.createClass");
+			e.preventDefault();
+			this.props.sendToCart(this.props.id)
+		},
+
     render () {
-      return <a href="#" className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} </a>;
+      return <a className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} <input onClick={this.sendToCart} value="Add to Cart" /></a>;
     }
 	})
+
+	const Cart = React.createClass({
+		render () {
+      let lineItems = this.props.lineItems.map(lineItem => <LineItem key={lineItem.id} {...lineItem} />);
+      return (
+        <div className="container">
+          <div className="row">
+            <div className="col-md-9">
+              <h1>Your Shopping Cart</h1>
+              <ul className="list-group">
+                {lineItems}
+              </ul>
+            </div>
+          </div>
+        </div>  
+      );
+    }
+	})
+
+  const LineItem = React.createClass({
+    render () {
+      return (
+        <div>  
+          <li className="list-group-item">
+            <span className="badge">{this.props.quantity}</span>
+            {this.props.name}
+          </li>
+        </div>
+      );
+    }
+  })
 
 	const App = React.createClass({
 	  render() {
