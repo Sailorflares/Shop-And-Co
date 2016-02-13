@@ -130,10 +130,34 @@ const Products = React.createClass({
 	  },
 
 	  addToCart (lineItem) {
-	  	console.log(lineItem);
-	  	this.setState({
-	  		lineItems: this.state.lineItems.concat(lineItem)
-	  	});
+	  	//Adjust the stock quantity
+	  	var self = this;
+	  	$.each(self.state.stockItems, function(index, item) {
+  			if(item.id == lineItem.id){
+  				self.state.stockItems[index].quantity -= 1;
+  				return;
+  			}
+  		});
+
+  		//Look to see if I can utilize react's key to find if this lineItem exists?
+  		var containsListItem = false;
+
+  		$.each(self.state.lineItems, function(index, item) {
+  			if(item.id == lineItem.id){
+  				containsListItem = true;
+  				self.state.lineItems[index].quantity += 1;
+  				return;
+  			}
+  		});
+
+  		if(containsListItem){
+  			self.forceUpdate();
+  		} else {
+  			lineItem.quantity = 1;
+  			self.setState({
+	  			lineItems: self.state.lineItems.concat(lineItem)
+	  		});
+  		}
 	  },
 
 		render() {
@@ -149,7 +173,7 @@ const Products = React.createClass({
             </div>
           </div>
 
-          <Cart lineItems={this.state.lineItems}/>
+          <Cart lineItems={this.state.lineItems} />
 
       	</div>
 			);
@@ -158,13 +182,19 @@ const Products = React.createClass({
 
 	const Product = React.createClass({
 		sendToCart(e) {
-			console.log("Product = React.createClass");
 			e.preventDefault();
-			this.props.sendToCart(this.props.id);
+			this.props.sendToCart({id:this.props.id, name:this.props.name, price:this.props.price});
 		},
 
     render () {
-      return <a className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} <button onClick={this.sendToCart}>Add To Cart</button> </a>;
+    	var button;
+    	if (this.props.quantity > 0) {
+    		button = <button className="btn" onClick={this.sendToCart}>Add To Cart</button>; 
+    	} else {
+    		button = <button className="btn disabled">Sold Out</button> ;
+    	}
+
+      return <a className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} {button}</a>;
     }
 	})
 
