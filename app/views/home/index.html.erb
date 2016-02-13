@@ -130,14 +130,14 @@ const Products = React.createClass({
 	  },
 
 	  addToCart (lineItem) {
-	  	console.log("You make it!");
+	  	console.log(lineItem);
 	  	this.setState({
 	  		lineItems: this.state.lineItems.concat(lineItem)
 	  	});
 	  },
 
 		render() {
-			let products = this.state.stockItems.map(stockItem => <Product key={stockItem.id} {...stockItem}/>);
+			let products = this.state.stockItems.map(stockItem => <Product sendToCart={this.addToCart} key={stockItem.id} {...stockItem}/>);
 			return (
 			  <div className="container">
           <div className="row">
@@ -149,7 +149,7 @@ const Products = React.createClass({
             </div>
           </div>
 
-          <Cart sendToCart={this.addToCart} lineItems={this.state.lineItems}/>
+          <Cart lineItems={this.state.lineItems}/>
 
       	</div>
 			);
@@ -160,11 +160,11 @@ const Products = React.createClass({
 		sendToCart(e) {
 			console.log("Product = React.createClass");
 			e.preventDefault();
-			this.props.sendToCart(this.props.id)
+			this.props.sendToCart(this.props.id);
 		},
 
     render () {
-      return <a className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} <input onClick={this.sendToCart} value="Add to Cart" /></a>;
+      return <a className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} <button onClick={this.sendToCart}>Add To Cart</button> </a>;
     }
 	})
 
