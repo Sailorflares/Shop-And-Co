@@ -6,52 +6,151 @@
 	var Link = window.ReactRouter.Link;
 	var browserHistory = window.ReactRouter.browserHistory;
 
-	const HelloWorld = React.createClass({
-
-		render() {
-			return <div> Hello World </div>;
-		}
-	})
-
 	const Stocks = React.createClass({
 		getInitialState () {
 			return { stockItems: [] };
 		},
 
 		componentDidMount () {
-		    this.serverRequest = $.get('/stocks/index', function (result) {
-				this.setState({
-					stockItems: result
-				});
-		    }.bind(this));
-		  },
+	    this.getStocks = $.get('/stocks/index', function (result) {
+			this.setState({
+				stockItems: result
+			});
+	    }.bind(this));
+	  },
 
-		  componentWillUnmount () {
-		    this.serverRequest.abort();
-		  },
+	  componentWillUnmount () {
+	    this.getStocks.abort();
+	  },
+
+	  handleStockSubmit (stock) {
+	  	var self = this;
+	  	$.ajax({
+			  type: "POST",
+			  url: '/stocks/create',
+			  data: stock,
+			  success: function(result) {
+			  	self.setState({
+			  		stockItems: self.state.stockItems.concat(result)
+			  	})
+			  }
+			});
+	  },
 
 		render() {
 			let stockItems = this.state.stockItems.map(stockItem => <StockItem key={stockItem.id} {...stockItem}/>);
 			return (
 			  <div className="container">
-                <div className="row">
-                  <h1>Stocks</h1>
-                </div>
-                <div className="row">
-                  <div className="list-group">
-                    {stockItems}
-                  </div>
-                </div>
-              </div>
+          <div className="row">
+            <h1>Stocks</h1>
+          </div>
+          <div className="row">
+            <div className="list-group">
+              {stockItems}
+            </div>
+          </div>
+
+          <div className="container">
+        	  <div className="row">
+              <h2>New Stock</h2>
+            </div>
+            <div className="row">
+              <NewStock onStockSubmit={this.handleStockSubmit}/>
+            </div>
+        	</div>
+      	</div>
 			);
 		}
 	})
 
 	const StockItem = React.createClass({
-        render () {
-          return <a href="#" className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} | <b>Quantity</b>: {this.props.quantity}</a>;
-        }
-  	})
+    render () {
+      return <a href="#" className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} | <b>Quantity</b>: {this.props.quantity}</a>;
+    }
+	})
+
+	const NewStock = React.createClass({
+    getInitialState () {
+    	return {name: '', price:'', quantity:''};
+  	},
+
+  	handleSubmit (e) {
+  		e.preventDefault();
+
+  		//Browser Side Validation?
+
+  		this.props.onStockSubmit({
+					name: this.state.name,
+					price: this.state.price,
+					quantity: this.state.quantity
+			});
+
+			this.setState({name: '', price:'', quantity:''});
+  	},
+
+	  handleChange (name, e) {
+	    var change = {};
+	    change[name] = e.target.value;
+	    this.setState(change);
+  	},
+
+    render () {
+      return (
+        <div>
+          <form onSubmit={this.handleSubmit}>
+	          <label >Product Name</label><br />
+	          <input className="form-control" value= {this.state.name} onChange={this.handleChange.bind(this, 'name')} />
+	          <label >Price</label><br />
+	          <input className="form-control" value= {this.state.price} onChange={this.handleChange.bind(this, 'price')} />
+	          <label >Quantity</label><br />
+	          <input className="form-control" value= {this.state.quantity} onChange={this.handleChange.bind(this, 'quantity')} />
+	          <button>Add New Stock</button>
+        	</form>
+        </div>
+      );
+    }
+  })
+
+const Products = React.createClass({
+		getInitialState () {
+			return { stockItems: [] };
+		},
+
+		componentDidMount () {
+	    this.getStocks = $.get('/stocks/index', function (result) {
+			this.setState({
+				stockItems: result
+			});
+	    }.bind(this));
+	  },
+
+	  componentWillUnmount () {
+	    this.getStocks.abort();
+	  },
+
+		render() {
+			let products = this.state.stockItems.map(stockItem => <Product key={stockItem.id} {...stockItem}/>);
+			return (
+			  <div className="container">
+          <div className="row">
+            <h1>Products</h1>
+          </div>
+          <div className="row">
+            <div className="list-group">
+              {products}
+            </div>
+          </div>
+
+      	</div>
+			);
+		}
+	})
+
+	const Product = React.createClass({
+    render () {
+      return <a href="#" className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} </a>;
+    }
+	})
 
 	const App = React.createClass({
 	  render() {
@@ -74,7 +173,7 @@
 	  <div>
 		  <Router history={browserHistory}>
 		    <Route path="/" component={App}>
-		      <Route path="shop" component={HelloWorld} />
+		      <Route path="shop" component={Products} />
 		      <Route path="stocks" component={Stocks} />
 		    </Route>
 		  </Router>
