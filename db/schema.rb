@@ -11,31 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160207172616) do
-
-  create_table "line_items", force: true do |t|
-    t.string   "product_id"
-    t.string   "order_id"
-    t.integer  "quantity"
-    t.decimal  "price"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "orders", force: true do |t|
-    t.decimal  "total"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "products", force: true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+ActiveRecord::Schema.define(version: 20160207023642) do
 
   create_table "stocks", force: true do |t|
-    t.string   "product_id"
+    t.string   "name"
     t.integer  "quantity"
     t.decimal  "price"
     t.datetime "created_at"

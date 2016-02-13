@@ -1,7 +1,7 @@
 class CreateStocks < ActiveRecord::Migration
   def change
     create_table :stocks do |t|
-  	  t.string :product_id
+  	  t.string :name
       t.integer :quantity
       t.decimal :price
 

@@ -2,17 +2,9 @@ class StocksController < ApplicationController
   before_action :set_stock, only: [:show, :edit, :update, :destroy]
 
   def index
-    stocks = Stock.all
-
-    @stocks_array = stocks.map do |stock|
-      stockHash = {}
-      stockHash[:price] = stock.price
-      stockHash[:product_name] = Product.where(:id => stock.product_id).first.name
-      stockHash[:quantity] = stock.quantity
-      stockHash[:id] = stock.id
-      stockHash
-    end
+    render json: Stock.all
   end
+
 
   def show
   end

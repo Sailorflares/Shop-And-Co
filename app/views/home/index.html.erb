@@ -1,81 +1,83 @@
-<!DOCTYPE html>
-<html>
+<div id="mount"></div>
 
-	<head>
+<script type="text/babel">
+	var Router = window.ReactRouter.Router;
+	var Route = window.ReactRouter.Route;
+	var Link = window.ReactRouter.Link;
+	var browserHistory = window.ReactRouter.browserHistory;
 
+	const HelloWorld = React.createClass({
 
-	</head>
+		render() {
+			return <div> Hello World </div>;
+		}
+	})
 
-	<body>
+	const Stocks = React.createClass({
+		getInitialState () {
+			return { stockItems: [] };
+		},
 
+		componentDidMount () {
+		    this.serverRequest = $.get('/stocks/index', function (result) {
+				this.setState({
+					stockItems: result
+				});
+		    }.bind(this));
+		  },
 
+		  componentWillUnmount () {
+		    this.serverRequest.abort();
+		  },
 
-	<%= form_tag("/product", method: "put") do %>
-	  <%= label_tag(:q, "Search for:") %>
-	  <%= text_field_tag(:q) %>
-	  <%= submit_tag("Save me") %>
-	<% end %>
+		render() {
+			let stockItems = this.state.stockItems.map(stockItem => <StockItem key={stockItem.id} {...stockItem}/>);
+			return (
+			  <div className="container">
+                <div className="row">
+                  <h1>Stocks</h1>
+                </div>
+                <div className="row">
+                  <div className="list-group">
+                    {stockItems}
+                  </div>
+                </div>
+              </div>
+			);
+		}
+	})
 
+	const StockItem = React.createClass({
+        render () {
+          return <a href="#" className="list-group-item"><b>Name</b>: {this.props.name} | <b>Price</b>: {this.props.price} | <b>Quantity</b>: {this.props.quantity}</a>;
+        }
+  	})
 
+	const App = React.createClass({
+	  render() {
+	    return (
+	      <div>
+	        <h1>Shop or Stock?</h1>
 
+	        <ul>
+	          <li><Link to="/shop">Shop</Link></li>
+	          <li><Link to="/stocks">Stocks</Link></li>
+	        </ul>
 
+	        {this.props.children}
+	      </div>
+	    )
+	  }
+	})
 
-
-
-
-
-
-
-
-
-
-
-
-
-		
-
-		<div class="container">
-			<div class="row">
-				<div class="list-group">
-				  <a href="#" class="list-group-item disabled">
-				    Cras justo odio
-				  </a>
-				  <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-				  <a href="#" class="list-group-item">Morbi leo risus</a>
-				  <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-				  <a href="#" class="list-group-item">Vestibulum at eros</a>
-				</div>
-			</div>
-		</div>
-
-
-
-
-
-
-
-
-
-
-		<div id="root"></div>
-
-		<script>
-			console.log("Hello");
-			
-			var HelloMessage = React.createClass({
-				displayName: "HelloMessage",
-				render: function render() {
-					return React.createElement(
-						"div",
-						null,
-						"Hello ",
-						this.props.name
-					);
-				}
-			});
-
-			ReactDOM.render(React.createElement(HelloMessage, { name: "Liz" }), document.getElementById('root'));
-		</script>
-	</body>
-
-</html>
+	ReactDOM.render((
+	  <div>
+		  <Router history={browserHistory}>
+		    <Route path="/" component={App}>
+		      <Route path="shop" component={HelloWorld} />
+		      <Route path="stocks" component={Stocks} />
+		    </Route>
+		  </Router>
+	  </div>
+	), document.getElementById('mount'))
+</script>
