@@ -46,14 +46,14 @@
 					  success: function(result) {
 					  	self.setState({
 					  		stockItems: self.state.stockItems.concat(result)
+					  	}, function() {
+					  		this.props.onNewStock(self.state.stockItems);
 					  	})
 					  }
 					});
 			  },
 
 				render() {
-					console.log("Inventory");
-					console.log(this.props);
 					let stockItems = this.state.stockItems.map(stockItem => <StockItem key={stockItem.id} {...stockItem}/>);
 					return (
 					  <div className="container">
@@ -155,18 +155,17 @@
 				},
 
 				cartChange () {
-					console.log("cartChange", this.state.stockItems);
 					this.props.onCartChange(this.state.lineItems, this.state.stockItems);
 				},
 
 			  addToCart (lineItem) {
 			  	var self = this;
 
-			  	console.log("addToCart", self.state.stockItems);
-			  	console.log("addToCart state", self.state);
-			  	$.each(self.state.stockItems, function(index, item) {
+			  	var newStockItems = self.props.stockItems;
+
+			  	$.each(newStockItems, function(index, item) {
 		  			if(item.id === lineItem.id){
-		  				self.state.stockItems[index].quantity -= 1;
+		  				newStockItems[index].quantity -= 1;
 		  				return;
 		  			}
 		  		});
@@ -192,7 +191,7 @@
 		  		}
 
 	  			self.setState({
-	  				stockItems: self.state.stockItems,
+	  				stockItems: newStockItems,
 		  			lineItems: newLineItems 
 		  		}, function(){
 		  			self.cartChange(self.state.lineItems, self.state.stockItems);
@@ -243,7 +242,6 @@
 			  },
 
 				render () {
-					console.log("render", this.props.stockItems);
 					let products = this.props.stockItems.map(stockItem => <Product sendToCart={this.addToCart} key={stockItem.id} {...stockItem}/>);
 					return (
 					  <div className="container">
@@ -265,7 +263,6 @@
 
 			const Product = React.createClass({
 				sendToCart (e) {
-					console.log("this.props.sendtocart{id,name,price}", self.state.stockItems);
 					e.preventDefault();
 					this.props.sendToCart({id:this.props.id, name:this.props.name, price:this.props.price});
 				},
@@ -355,7 +352,6 @@
 				},
 
 				componentDidMount () {
-					console.log("this is happening");
 			    this.getStocks = $.get('/stocks/index', function (result) {
 					this.setState({
 						stockItems: result
@@ -368,11 +364,15 @@
 			  },
 
 				handleCartChange(newLineItems, newStockItems) {
-					console.log("Handle cart change");
-					console.log(newStockItems);
 					this.setState ({
 						stockItems: newStockItems,
 						lineItems: newLineItems
+					});
+				},
+
+				handleNewStock(newStockItems) {
+					this.setState ({
+						stockItems: newStockItems
 					});
 				},
 
@@ -395,7 +395,7 @@
 							  </div>
 							</nav>
 
-			        {this.props.children && React.cloneElement(this.props.children, { onCartChange: this.handleCartChange, lineItems: this.state.lineItems, stockItems: this.state.stockItems })}
+			        {this.props.children && React.cloneElement(this.props.children, { onCartChange: this.handleCartChange, onNewStock: this.handleNewStock, lineItems: this.state.lineItems, stockItems: this.state.stockItems })}
 			      </div>
 			    )
 			  }
