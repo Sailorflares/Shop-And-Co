@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get '/shop' => 'home#index'
   get '/stocks/index' => 'stocks#index'
   post '/stocks/create' => 'stocks#create'
+  post '/stocks/purchase' => 'stocks#purchase'
 
   root :to => redirect('/shop')
   # Example of regular route:

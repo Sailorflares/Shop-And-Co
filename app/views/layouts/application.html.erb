@@ -153,7 +153,7 @@
 				},
 
 				componentDidMount () {
-					//because products is also hitting /stocks/index, this could be arranged to not have to make this call since stockItems componenet also calls this...
+					//because products is also hitting /stocks/index, this could be arranged to not have to make this call since stockItems componenet also calls this.
 			    this.getStocks = $.get('/stocks/index', function (result) {
 					this.setState({
 						stockItems: result
@@ -213,6 +213,29 @@
 					});
 			  },
 
+			  purchaseOrder (lineItems) {
+			  	var purchaseHash = {};
+
+			  	$.each(lineItems, function(index, item) {
+			  		purchaseHash[item.id] = item.quantity;
+			  	});
+
+			  	var self = this;
+			  	$.ajax({
+					  type: "POST",
+					  url: '/stocks/purchase',
+					  data: { "lineItems": purchaseHash },
+					  success: function(result) {
+					  	self.setState({
+					  		stockItems: result,
+					  		lineItems: []
+					  	})
+
+					  	alert("Your purchase was successful! Are you sure you don't want to buy more things again?");
+					  }
+					});
+			  },
+
 				render () {
 					let products = this.state.stockItems.map(stockItem => <Product sendToCart={this.addToCart} key={stockItem.id} {...stockItem}/>);
 					return (
@@ -226,7 +249,7 @@
 		            </div>
 		          </div>
 
-		          <Cart deleteFromCart={this.deleteFromCart} lineItems={this.state.lineItems} />
+		          <Cart purchase={this.purchaseOrder} deleteFromCart={this.deleteFromCart} lineItems={this.state.lineItems} />
 
 		      	</div>
 					);
@@ -255,6 +278,7 @@
 
 			//begin Cart components
 
+			//Right now, Cart only lives on this products level. Switching back to inventory wipes out cart. Somehow have the state of the cart live on Main so the state would persist even with the user clicking into different parts of the app?
 			const Cart = React.createClass({
 				deleteFromCart (lineItemId, quantity) {
 		  		this.props.deleteFromCart(lineItemId, quantity);
@@ -262,20 +286,33 @@
 
 				purchase (e) {
 					e.preventDefault();
-					console.log("purchasing!");
+					this.props.purchase(this.props.lineItems);
 				}, 
 
 				render () {
 		      let lineItems = this.props.lineItems.map(lineItem => <LineItem deleteFromCart={this.deleteFromCart} key={lineItem.id} {...lineItem} />);
+
+		      var shoppingBasket;
+
+		      if(lineItems.length > 0){
+		      	shoppingBasket = (
+		      		<div>
+			      		<ul className="list-group">
+			                {lineItems}
+	              </ul>
+	              <button className="btn" onClick={this.purchase}>Purchase</button>
+              </div>
+            );
+		      } else {
+		      	shoppingBasket = <div>There&#39;s nothing here yet! Click on an item to add it to your cart.</div>;
+		      }
+
 		      return (
 		        <div className="container">
 		          <div className="row">
 		            <div className="col-md-9">
 		              <h1>Your Shopping Basket</h1>
-		              <ul className="list-group">
-		                {lineItems}
-		              </ul>
-		              <button className="btn" onClick={this.purchase}>Purchase</button>
+		              	{shoppingBasket}
 		            </div>
 		          </div>
 		        </div>  
