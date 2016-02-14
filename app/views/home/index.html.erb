@@ -133,7 +133,7 @@ const Products = React.createClass({
 	  	//Adjust the stock quantity
 	  	var self = this;
 	  	$.each(self.state.stockItems, function(index, item) {
-  			if(item.id == lineItem.id){
+  			if(item.id === lineItem.id){
   				self.state.stockItems[index].quantity -= 1;
   				return;
   			}
@@ -143,7 +143,7 @@ const Products = React.createClass({
   		var containsListItem = false;
 
   		$.each(self.state.lineItems, function(index, item) {
-  			if(item.id == lineItem.id){
+  			if(item.id === lineItem.id){
   				containsListItem = true;
   				self.state.lineItems[index].quantity += 1;
   				return;
@@ -160,7 +160,19 @@ const Products = React.createClass({
   		}
 	  },
 
-		render() {
+	  deleteFromCart (lineItemId) {
+	  	var self = this; 
+
+	  	var newLineItems = self.state.lineItems.filter(function (item) {
+	  		return item.id != lineItemId;
+	  	});
+
+			self.setState({
+				lineItems: newLineItems
+			});
+	  },
+
+		render () {
 			let products = this.state.stockItems.map(stockItem => <Product sendToCart={this.addToCart} key={stockItem.id} {...stockItem}/>);
 			return (
 			  <div className="container">
@@ -173,7 +185,7 @@ const Products = React.createClass({
             </div>
           </div>
 
-          <Cart lineItems={this.state.lineItems} />
+          <Cart deleteFromCart={this.deleteFromCart} lineItems={this.state.lineItems} />
 
       	</div>
 			);
@@ -181,7 +193,7 @@ const Products = React.createClass({
 	})
 
 	const Product = React.createClass({
-		sendToCart(e) {
+		sendToCart (e) {
 			e.preventDefault();
 			this.props.sendToCart({id:this.props.id, name:this.props.name, price:this.props.price});
 		},
@@ -199,8 +211,12 @@ const Products = React.createClass({
 	})
 
 	const Cart = React.createClass({
+		deleteFromCart (lineItemId) {
+  		this.props.deleteFromCart(lineItemId);
+		},
+
 		render () {
-      let lineItems = this.props.lineItems.map(lineItem => <LineItem key={lineItem.id} {...lineItem} />);
+      let lineItems = this.props.lineItems.map(lineItem => <LineItem deleteFromCart={this.deleteFromCart} key={lineItem.id} {...lineItem} />);
       return (
         <div className="container">
           <div className="row">
@@ -217,12 +233,18 @@ const Products = React.createClass({
 	})
 
   const LineItem = React.createClass({
+  	deleteFromCart(e){
+  		e.preventDefault();
+  		this.props.deleteFromCart(this.props.id);
+  	},
+
     render () {
       return (
         <div>  
           <li className="list-group-item">
             <span className="badge">{this.props.quantity}</span>
             {this.props.name}
+            <button className="btn" onClick={this.deleteFromCart}>Delete From Cart</button>
           </li>
         </div>
       );
