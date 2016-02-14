@@ -52,6 +52,8 @@
 			  },
 
 				render() {
+					console.log("Inventory");
+					console.log(this.props);
 					let stockItems = this.state.stockItems.map(stockItem => <StockItem key={stockItem.id} {...stockItem}/>);
 					return (
 					  <div className="container">
@@ -149,24 +151,19 @@
 		//begin Product components 
 		const Products = React.createClass({
 				getInitialState () {
-					return { stockItems: [], lineItems: [] };
+					return { stockItems: this.props.stockItems, lineItems: this.props.lineItems };
 				},
 
-				componentDidMount () {
-					//because products is also hitting /stocks/index, this could be arranged to not have to make this call since stockItems componenet also calls this.
-			    this.getStocks = $.get('/stocks/index', function (result) {
-					this.setState({
-						stockItems: result
-					});
-			    }.bind(this));
-			  },
-
-			  componentWillUnmount () {
-			    this.getStocks.abort();
-			  },
+				cartChange () {
+					console.log("cartChange", this.state.stockItems);
+					this.props.onCartChange(this.state.lineItems, this.state.stockItems);
+				},
 
 			  addToCart (lineItem) {
 			  	var self = this;
+
+			  	console.log("addToCart", self.state.stockItems);
+			  	console.log("addToCart state", self.state);
 			  	$.each(self.state.stockItems, function(index, item) {
 		  			if(item.id === lineItem.id){
 		  				self.state.stockItems[index].quantity -= 1;
@@ -185,15 +182,22 @@
 		  			}
 		  		});
 
+
+		  		var newLineItems;
 		  		if(containsListItem){
-		  			self.forceUpdate();
+		  			newLineItems = self.state.lineItems;
 		  		} else {
 		  			lineItem.quantity = 1;
-		  			self.setState({
-			  			lineItems: self.state.lineItems.concat(lineItem)
-			  		});
+		  			newLineItems = self.state.lineItems.concat(lineItem);
 		  		}
-			  },
+
+	  			self.setState({
+	  				stockItems: self.state.stockItems,
+		  			lineItems: newLineItems 
+		  		}, function(){
+		  			self.cartChange(self.state.lineItems, self.state.stockItems);
+		  		});
+	  		},
 
 			  deleteFromCart (lineItemId, quantity) {
 			  	var self = this; 
@@ -210,6 +214,8 @@
 
 					self.setState({
 						lineItems: newLineItems
+					}, function(){
+						self.cartChange(self.state.lineItems, self.state.stockItems);
 					});
 			  },
 
@@ -229,7 +235,7 @@
 					  	self.setState({
 					  		stockItems: result,
 					  		lineItems: []
-					  	})
+					  	}, function() {self.cartChange(self.state.lineItems, self.state.stockItems)});
 
 					  	alert("Your purchase was successful! Are you sure you don't want to buy more things again?");
 					  }
@@ -237,7 +243,8 @@
 			  },
 
 				render () {
-					let products = this.state.stockItems.map(stockItem => <Product sendToCart={this.addToCart} key={stockItem.id} {...stockItem}/>);
+					console.log("render", this.props.stockItems);
+					let products = this.props.stockItems.map(stockItem => <Product sendToCart={this.addToCart} key={stockItem.id} {...stockItem}/>);
 					return (
 					  <div className="container">
 		          <div className="row">
@@ -249,7 +256,7 @@
 		            </div>
 		          </div>
 
-		          <Cart purchase={this.purchaseOrder} deleteFromCart={this.deleteFromCart} lineItems={this.state.lineItems} />
+		          <Cart purchase={this.purchaseOrder} deleteFromCart={this.deleteFromCart} lineItems={this.props.lineItems} />
 
 		      	</div>
 					);
@@ -258,6 +265,7 @@
 
 			const Product = React.createClass({
 				sendToCart (e) {
+					console.log("this.props.sendtocart{id,name,price}", self.state.stockItems);
 					e.preventDefault();
 					this.props.sendToCart({id:this.props.id, name:this.props.name, price:this.props.price});
 				},
@@ -277,8 +285,6 @@
 			//end Product components
 
 			//begin Cart components
-
-			//Right now, Cart only lives on this products level. Switching back to inventory wipes out cart. Somehow have the state of the cart live on Main so the state would persist even with the user clicking into different parts of the app?
 			const Cart = React.createClass({
 				deleteFromCart (lineItemId, quantity) {
 		  		this.props.deleteFromCart(lineItemId, quantity);
@@ -298,7 +304,7 @@
 		      	shoppingBasket = (
 		      		<div>
 			      		<ul className="list-group">
-			                {lineItems}
+	                {lineItems}
 	              </ul>
 	              <button className="btn" onClick={this.purchase}>Purchase</button>
               </div>
@@ -344,6 +350,32 @@
 		  //begin Main components
 
 			const Main = React.createClass({
+				getInitialState() {
+					return { stockItems: [], lineItems: [] }
+				},
+
+				componentDidMount () {
+					console.log("this is happening");
+			    this.getStocks = $.get('/stocks/index', function (result) {
+					this.setState({
+						stockItems: result
+					});
+			    }.bind(this));
+			  },
+
+			  componentWillUnmount () {
+			    this.getStocks.abort();
+			  },
+
+				handleCartChange(newLineItems, newStockItems) {
+					console.log("Handle cart change");
+					console.log(newStockItems);
+					this.setState ({
+						stockItems: newStockItems,
+						lineItems: newLineItems
+					});
+				},
+
 			  render() {
 			    return (
 			      <div>
@@ -363,7 +395,7 @@
 							  </div>
 							</nav>
 
-			        {this.props.children}
+			        {this.props.children && React.cloneElement(this.props.children, { onCartChange: this.handleCartChange, lineItems: this.state.lineItems, stockItems: this.state.stockItems })}
 			      </div>
 			    )
 			  }
