@@ -1,28 +1,9 @@
-== README
+Welcome to Shop & Co!
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Fork this repo and you'll have a store to shop in, but no products! Add a new stock on the inventory page, but be careful to make sure you include all the fields. After adding some stock, you can jump over to the shop page and play around with which items you want to add (or delete) from you cart. You can only pick up as many items as are on the shelf though, but don't worry - your shop will let you know when there's no more of a certain stock left. Click purchase for always satisfying order placed message, and check out the changes in inventory - whatever you've bought is no longer included in the stock count.
 
-Things you may want to cover:
+Development Notes:
 
-* Ruby version
+Currently, all of my react components are living in a script on the application.html.erb page. In the real world, each component would be extracted into a different file for readability. Due to time constraints, I didn't have time to break everything out into files... The added complexity of using JSX meant that I'd have to add a transpiler like babel over my asset pipeline. 
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+TL;DR I can't wait to chat about this project and discuss some of my design decisions and ways to improve. :)
