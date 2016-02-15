@@ -26,10 +26,10 @@
 				},
 
 				componentDidMount () {
-			    this.getStocks = $.get('/stocks/index', function (result) {
-					this.setState({
-						stockItems: result
-					});
+			    this.getStocks = $.get('/stocks/index', function(result) {
+						this.setState({
+							stockItems: result
+						});
 			    }.bind(this));
 			  },
 
@@ -53,7 +53,7 @@
 					});
 			  },
 
-				render() {
+				render () {
 					let stockItems = this.state.stockItems.map(stockItem => <StockItem key={stockItem.id} {...stockItem}/>);
 					return (
 					  <div className="container">
@@ -136,7 +136,7 @@
 						<div className={classes} role="alert">
 						  <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 						  <span className="sr-only">Error:</span>
-						  Please confirm that your stock values are all present and correct format.
+						  Please confirm that your stock values are all present and correctly formatted.
 						</div>
 					);
 				}
@@ -177,7 +177,6 @@
 		  			}
 		  		});
 
-
 		  		var newLineItems;
 		  		if(containsListItem){
 		  			newLineItems = self.state.lineItems;
@@ -197,7 +196,7 @@
 			  deleteFromCart (lineItemId, quantity) {
 			  	var self = this; 
 
-			  	var newLineItems = self.state.lineItems.filter(function (item) {
+			  	var newLineItems = self.state.lineItems.filter(function(item) {
 			  		return item.id != lineItemId;
 			  	});
 
@@ -341,10 +340,10 @@
 				},
 
 				componentDidMount () {
-			    this.getStocks = $.get('/stocks/index', function (result) {
-					this.setState({
-						stockItems: result
-					});
+			    this.getStocks = $.get('/stocks/index', function(result) {
+						this.setState({
+							stockItems: result
+						});
 			    }.bind(this));
 			  },
 
@@ -352,20 +351,20 @@
 			    this.getStocks.abort();
 			  },
 
-				handleCartChange(newLineItems, newStockItems) {
+				handleCartChange (newLineItems, newStockItems) {
 					this.setState ({
 						stockItems: newStockItems,
 						lineItems: newLineItems
 					});
 				},
 
-				handleNewStock(newStockItems) {
+				handleNewStock (newStockItems) {
 					this.setState ({
 						stockItems: newStockItems
 					});
 				},
 
-			  render() {
+			  render () {
 			    return (
 			      <div>
 							<nav className="navbar navbar-default">
